@@ -22,3 +22,15 @@ func TestCreateLogSuccess(t *testing.T) {
 	assert.NotEqual(t, len(logID), 0)
 	assert.True(t, strings.HasPrefix(logID, "log-"))
 }
+
+func TestCreateLogDBError(t *testing.T) {
+	logStore := stores.NewTestLogStore(
+		stores.WithLogStoreErrCallback(func() bool { return true }),
+	)
+
+	err := usecases.CreateLog(logStore)
+	assert.NotNil(t, err)
+
+	logs := logStore.Logs()
+	assert.Equal(t, len(logs), 0)
+}
